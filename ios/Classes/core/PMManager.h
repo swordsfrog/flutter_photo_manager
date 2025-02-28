@@ -129,4 +129,8 @@ typedef void (^AssetBlockResult)(PMAssetEntity *, NSObject *);
 
 - (NSArray<PMAssetEntity*>*) getAssetsWithType:(int)type option:(NSObject<PMBaseFilter> *)option start:(int)start end:(int)end;
 
+- (void)getFileSizeWithId:(NSString *)assetId resultHandler:(NSObject <PMResultHandler> *)handler;
+
+- (void)getAssetFileSize:(PHAsset *)asset completion:(void(^)(long long fileSize))completion;
+
 @end

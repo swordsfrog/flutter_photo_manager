@@ -434,6 +434,81 @@
     }
 }
 
+- (void)getFileSizeWithId:(NSString *)assetId resultHandler:(NSObject <PMResultHandler> *)handler {
+    PMAssetEntity *entity = [self getAssetEntity:assetId];
+    if (entity && entity.phAsset) {
+        PHAsset *asset = entity.phAsset;
+        [self getAssetFileSize:asset completion:^(long long fileSize) {
+            [handler reply: @(fileSize)];
+        }];
+    } else {
+        [handler replyError:[NSString stringWithFormat:@"Asset %@ is not found", assetId]];
+    }
+}
+
+#import <Photos/Photos.h>
+
+- (void)getAssetFileSize:(PHAsset *)asset completion:(void(^)(long long fileSize))completion {
+    // Fetch the asset resources
+    NSArray<PHAssetResource *> *assetResources = [PHAssetResource assetResourcesForAsset:asset];
+
+    __block long long totalSize = 0;
+
+    // Iterate over all resources associated with the asset (photo, video, etc.)
+    for (PHAssetResource *resource in assetResources) {
+        switch (resource.type) {
+            case PHAssetResourceTypePhoto:
+            case PHAssetResourceTypeFullSizePhoto: {
+                // Handle the image file
+                NSURL *fileURL = resource.fileURL;
+                NSError *error = nil;
+                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileURL.path error:&error];
+                if (fileAttributes) {
+                    NSNumber *fileSize = fileAttributes[NSFileSize];
+                    totalSize += [fileSize longLongValue];
+                } else {
+                    NSLog(@"Error fetching image file size: %@", error);
+                }
+                break;
+            }
+            case PHAssetResourceTypeFullSizeVideo:
+            case PHAssetResourceTypeVideo: {
+                // Handle the video file
+                NSURL *fileURL = resource.fileURL;
+                NSError *error = nil;
+                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileURL.path error:&error];
+                if (fileAttributes) {
+                    NSNumber *fileSize = fileAttributes[NSFileSize];
+                    totalSize += [fileSize longLongValue];
+                } else {
+                    NSLog(@"Error fetching video file size: %@", error);
+                }
+                break;
+            }
+            case PHAssetResourceTypeFullSizePairedVideo:
+            case PHAssetResourceTypePairedVideo: {
+                // Handle the video part of a Live Photo
+                NSURL *fileURL = resource.fileURL;
+                NSError *error = nil;
+                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileURL.path error:&error];
+                if (fileAttributes) {
+                    NSNumber *fileSize = fileAttributes[NSFileSize];
+                    totalSize += [fileSize longLongValue];
+                } else {
+                    NSLog(@"Error fetching Live Photo video part file size: %@", error);
+                }
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+
+    // Return the total size (in bytes)
+    completion(totalSize);
+}
+
 - (void)fetchThumb:(PHAsset *)asset option:(PMThumbLoadOption *)option resultHandler:(NSObject <PMResultHandler> *)handler progressHandler:(NSObject <PMProgressHandlerProtocol> *)progressHandler {
     PHImageRequestOptions *requestOptions = [PHImageRequestOptions new];
     requestOptions.deliveryMode = option.deliveryMode;

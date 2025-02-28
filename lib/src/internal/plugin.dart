@@ -291,6 +291,13 @@ class PhotoManagerPlugin with BasePlugin, IosPlugin, AndroidPlugin, OhosPlugin {
     return _channel.invokeMethod(PMConstants.mGetFullFile, params);
   }
 
+  Future<int?> getFileSize(String id) async {
+    final params = <String, dynamic>{
+      'id': id,
+    };
+    return _channel.invokeMethod(PMConstants.mGetFileSize, params);
+  }
+
   Future<void> setLog(bool isLog) {
     return _channel.invokeMethod(PMConstants.mLog, isLog);
   }

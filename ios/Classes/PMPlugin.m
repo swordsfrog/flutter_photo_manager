@@ -438,6 +438,9 @@
                          option:option
                   resultHandler:handler
                 progressHandler:progressHandler];
+    } else if ([call.method isEqualToString:@"getFileSize"]) {
+        NSString *assetId = call.arguments[@"id"];
+        [manager getFileSizeWithId:assetId resultHandler:handler];
     } else if ([call.method isEqualToString:@"getFullFile"]) {
         NSString *assetId = call.arguments[@"id"];
         BOOL isOrigin = [call.arguments[@"isOrigin"] boolValue];

@@ -530,6 +530,8 @@ class AssetEntity {
   ///  * [loadFile] which can obtain file with [PMProgressHandler].
   Future<File?> get file => _getFile();
 
+  Future<int> get fileSize =>
+
   /// Obtain the compressed file of the asset with subtype.
   ///
   /// This method only takes effect on iOS, typically for Live Photos.
@@ -748,6 +750,27 @@ class AssetEntity {
       Platform.isMacOS ||
       Platform.isAndroid ||
       PlatformUtils.isOhos;
+
+  Future<File?> _getFileSize() async {
+    assert(
+    _platformMatched,
+    '${Platform.operatingSystem} does not support obtain file.',
+    );
+    if (!_platformMatched) {
+      return null;
+    }
+    final String? path = await plugin.getFullFile(
+      id,
+      isOrigin: isOrigin,
+      progressHandler: progressHandler,
+      subtype: subtype,
+      darwinFileType: darwinFileType,
+    );
+    if (path == null) {
+      return null;
+    }
+    return File(path);
+  }
 
   Future<File?> _getFile({
     bool isOrigin = false,

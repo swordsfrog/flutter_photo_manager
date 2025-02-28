@@ -64,6 +64,8 @@ class PMConstants {
   static const String mGetAssetCount = 'getAssetCount';
   static const String mGetAssetsByRange = 'getAssetsByRange';
 
+  static const String mGetFileSize = 'getFileSize';
+
   /// Constant value.
   static const int vDefaultThumbnailSize = 150;
   static const int vDefaultThumbnailQuality = 95;
