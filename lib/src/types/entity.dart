@@ -530,7 +530,7 @@ class AssetEntity {
   ///  * [loadFile] which can obtain file with [PMProgressHandler].
   Future<File?> get file => _getFile();
 
-  Future<int> get fileSize =>
+  Future<int?> get fileSize => _getFileSize();
 
   /// Obtain the compressed file of the asset with subtype.
   ///
@@ -751,7 +751,7 @@ class AssetEntity {
       Platform.isAndroid ||
       PlatformUtils.isOhos;
 
-  Future<File?> _getFileSize() async {
+  Future<int?> _getFileSize() async {
     assert(
     _platformMatched,
     '${Platform.operatingSystem} does not support obtain file.',
@@ -759,17 +759,13 @@ class AssetEntity {
     if (!_platformMatched) {
       return null;
     }
-    final String? path = await plugin.getFullFile(
+    final int? size = await plugin.getFileSize(
       id,
-      isOrigin: isOrigin,
-      progressHandler: progressHandler,
-      subtype: subtype,
-      darwinFileType: darwinFileType,
     );
-    if (path == null) {
+    if (size == null) {
       return null;
     }
-    return File(path);
+    return size;
   }
 
   Future<File?> _getFile({

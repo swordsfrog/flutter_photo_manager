@@ -446,8 +446,6 @@
     }
 }
 
-#import <Photos/Photos.h>
-
 - (void)getAssetFileSize:(PHAsset *)asset completion:(void(^)(long long fileSize))completion {
     // Fetch the asset resources
     NSArray<PHAssetResource *> *assetResources = [PHAssetResource assetResourcesForAsset:asset];
@@ -460,43 +458,22 @@
             case PHAssetResourceTypePhoto:
             case PHAssetResourceTypeFullSizePhoto: {
                 // Handle the image file
-                NSURL *fileURL = resource.fileURL;
-                NSError *error = nil;
-                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileURL.path error:&error];
-                if (fileAttributes) {
-                    NSNumber *fileSize = fileAttributes[NSFileSize];
-                    totalSize += [fileSize longLongValue];
-                } else {
-                    NSLog(@"Error fetching image file size: %@", error);
-                }
+                long long fileSize = [[resource valueForKey:@"fileSize"] longLongValue];
+                totalSize += fileSize;
                 break;
             }
             case PHAssetResourceTypeFullSizeVideo:
             case PHAssetResourceTypeVideo: {
                 // Handle the video file
-                NSURL *fileURL = resource.fileURL;
-                NSError *error = nil;
-                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileURL.path error:&error];
-                if (fileAttributes) {
-                    NSNumber *fileSize = fileAttributes[NSFileSize];
-                    totalSize += [fileSize longLongValue];
-                } else {
-                    NSLog(@"Error fetching video file size: %@", error);
-                }
+                long long fileSize = [[resource valueForKey:@"fileSize"] longLongValue];
+                totalSize += fileSize;
                 break;
             }
             case PHAssetResourceTypeFullSizePairedVideo:
             case PHAssetResourceTypePairedVideo: {
                 // Handle the video part of a Live Photo
-                NSURL *fileURL = resource.fileURL;
-                NSError *error = nil;
-                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileURL.path error:&error];
-                if (fileAttributes) {
-                    NSNumber *fileSize = fileAttributes[NSFileSize];
-                    totalSize += [fileSize longLongValue];
-                } else {
-                    NSLog(@"Error fetching Live Photo video part file size: %@", error);
-                }
+                long long fileSize = [[resource valueForKey:@"fileSize"] longLongValue];
+                totalSize += fileSize;
                 break;
             }
 
