@@ -438,9 +438,13 @@
     PMAssetEntity *entity = [self getAssetEntity:assetId];
     if (entity && entity.phAsset) {
         PHAsset *asset = entity.phAsset;
-        [self getAssetFileSize:asset completion:^(long long fileSize) {
-            [handler reply: @(fileSize)];
-        }];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self getAssetFileSize:asset completion:^(long long fileSize) {
+                dispatch_async(dispatch_get_main_queue(), ^ {
+                    [handler reply:@(fileSize)];
+                });
+            }];
+        });
     } else {
         [handler replyError:[NSString stringWithFormat:@"Asset %@ is not found", assetId]];
     }
